@@ -4,6 +4,7 @@ import argparse
 import os
 import sys
 
+import humanize
 from py_sg import read as sgread, write as sgwrite, SCSIError
 
 p = argparse.ArgumentParser()
@@ -50,7 +51,7 @@ print(f'  Phison USB ID {usb_vid:04x}:{usb_pid:04x}')
 print("Reading standard SCSI disk capacity (SCSI command 25 ...):")
 res = sgread(fd, bytes.fromhex('25 00 00 00 00 00 00 00 00 00 00 00 00 00'), 8)
 nblks, blksize = int.from_bytes(res[:4], 'big'), int.from_bytes(res[4:8], 'big')
-print(f'  SCSI block size {blksize} x {nblks} = {nblks*blksize} bytes')
+print(f'  SCSI block size {blksize} x {nblks} = {humanize.naturalsize(blksize*nblks)}')
 
 # 'INFO' read
 # https://gist.github.com/warewolf/e19d6817f1d59939a32fbd9e1a30b9d2
