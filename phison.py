@@ -13,7 +13,9 @@ args = p.parse_args()
 fd = os.open(args.dev, os.O_RDWR)
 
 # Initial read
-# https://gist.github.com/warewolf/e19d6817f1d59939a32fbd9e1a30b9d2
+# See https://gist.github.com/warewolf/e19d6817f1d59939a32fbd9e1a30b9d2,
+# Shmoocon talk: https://www.scribd.com/document/490018597/ShmooCon2014-Controlling-USB-Flash-Drive-Controllers,
+# and transcript of talk: https://www.scribd.com/document/490018597/ShmooCon2014-Controlling-USB-Flash-Drive-Controllers
 
 print("Reading vendor info (SCSI command 06 05 ...):")
 try:
@@ -29,7 +31,8 @@ if res[0x17a:0x17c] != b"VR":
 
 cid = res[0x17e:0x180].hex()
 if cid >= '2200':
-    pscid = f'PS2231-{cid[2:4]} (raw value {cid})'
+    # see https://wikidevi.wi-cat.ru/Phison#USB_Controllers
+    pscid = f'PS2251-{cid[2:4]} (raw value {cid})'
 else:
     pscid = f'{cid} (NOT 22xx OR 23xx)'
 fwver = '.'.join(str(b) for b in res[0x94:0x97])
@@ -62,7 +65,7 @@ mode = res[0xac]
 write_prot = res[0x131] & 1 # https://gist.github.com/warewolf/e19d6817f1d59939a32fbd9e1a30b9d2?permalink_comment_id=5829546#gistcomment-5829546
 split = int.from_bytes(res[0x1fc:0x200], 'big')
 print(f'  Phison split mode {mode}, split at {split} blocks = {split*blksize} bytes') # https://wikidevi.wi-cat.ru/Phison#USB_Controllers:~:text=PS2309%20%3D%20PS2251%2D09-,Mode,-Mode%203%20(No
-print(f'  Phison write-protect bit: {write_prot}')
+print(f'  Phison write-protect bit: {write_prot} (WRONG?)')
 
 # Flash ID read
 print("Reading flash ID (this will take up to 120 seconds:")

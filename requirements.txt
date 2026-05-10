@@ -1,1 +1,1 @@
-py_sg
+py_sg @ https://github.com/dlenski/py_sg/archive/main.zip

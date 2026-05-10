@@ -1,0 +1,25 @@
+[project]
+name = "phison"
+version = "0.1"
+authors = [
+    { name="Dan Lenski", email="dlenski@gmail.com" },
+]
+description = "Phison USB flash drive tool"
+readme = "README.md"
+keywords = [ "USB", "NAND", "utility" ]
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: System :: Hardware",
+]
+dependencies = [
+    "py-sg @ https://github.com/dlenski/py_sg/archive/main.zip",
+]
+
+[project.license]
+"text" = "GPL-3.0-or-later"
+
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools >= 40.9.0"]
