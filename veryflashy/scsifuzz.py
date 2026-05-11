@@ -18,14 +18,16 @@ p.add_argument('-t', '--timeout', default=20_000, type=int, help="Timeout in mil
 p.add_argument('-n', '--size', default=1024, type=int, help="Number of bytes to attempt to read (default %(default)s)")
 args = p.parse_args()
 
+if args.debug:
+    logging.basicConfig(level=logging.DEBUG)
+
+
 skip = set()
 for s in args.skip:
     s = bytes.fromhex(s)
     if len(s) < 1 or len(s) > 2:
         p.error(f"Skip argument {s.hex()} must be one or two bytes")
     skip.add(s)
-
-logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
 
 fd = os.open(args.dev, os.O_RDWR)
 
@@ -54,13 +56,13 @@ for b1 in range(256):
     for b0 in range(256):
 
         if reason := avoid.get(b0):
-            logger.warning(f"Avoiding SCSI opcode {b0:02x} because it's a {reason} opcode")
+            logger.debug(f"Avoiding SCSI opcode {b0:02x} because it's a {reason} opcode")
             continue
         elif bytes((b0,)) in skip:
-            logger.warning(f"Avoiding --skip'ed SCSI opcode {b0:02x}")
+            logger.debug(f"Avoiding --skip'ed SCSI opcode {b0:02x}")
             continue
         elif bytes((b0, b1)) in skip:
-            logger.warning(f"Avoiding --skip'ed SCSI prefix {b0:02x} {b1:02x}")
+            logger.debug(f"Avoiding --skip'ed SCSI prefix {b0:02x} {b1:02x}")
             continue
 
         g, l, r = opcode_g_len_res(b0)

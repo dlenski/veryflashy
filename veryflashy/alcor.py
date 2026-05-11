@@ -3,15 +3,20 @@
 import argparse
 import os
 import sys
+import logging
 
 import humanize
-from py_sg import read as _sgread, write as _sgwrite, SCSIError
+from py_sg import SCSIError
 
-from .common import bytesy
+from .common import bytesy, sgread as _sgread
 
 p = argparse.ArgumentParser()
+p.add_argument('-d', '--debug', action='store_true')
 p.add_argument('dev', help="Path to Alcor USB flash drive (e.g. /dev/sda or /dev/sg0)")
 args = p.parse_args()
+
+if args.debug:
+    logging.basicConfig(level=logging.DEBUG)
 
 fd = os.open(args.dev, os.O_RDWR | os.O_NONBLOCK)
 #print('opened with flags: 0x%04x' %(os.O_RDWR | os.O_NONBLOCK))
@@ -22,6 +27,7 @@ fd = os.open(args.dev, os.O_RDWR | os.O_NONBLOCK)
 # https://linuxehacking.ovh/2014/07/20/alcor-ufd-controller-hacking-update-2/
 
 def sgread(fd, cmd, bufLen, timeout_ms=None, flags=0):
+    '''Bad workaround for timeout issues with this device'''
     if timeout_ms is None:
         timeout_ms = 1_000
 
@@ -40,7 +46,6 @@ try:
     res = sgread(fd, bytesy('82 51 01', zpad=10), 525)
 except SCSIError as exc:
     p.error("SCSI error: probably not an Alcor device")
-print(res)
 if len(res) != 525:
     p.error("Command 82 51 01 response was not 525 bytes: probably not an Alcor device")
 if res[0:2] != b"\x99\x07":
@@ -71,7 +76,7 @@ if nblks_be != nblks_le:
 print(f'  Alcor flash size {nblks} blocks')
 
 # Flash ID read
-print("Reading flash ID (SCSI command 9a ...):")
+print("Reading flash ID (SCSI command fa 00 ...):")
 res = sgread(fd, bytesy('fa 00', zpad=8), 525)
 if len(res) != 525:
     p.error("Command fa 00 response was not 525 bytes")

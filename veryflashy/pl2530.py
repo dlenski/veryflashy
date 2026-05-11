@@ -3,15 +3,20 @@
 import argparse
 import os
 import sys
+import logging
 
 import humanize
-from py_sg import read as sgread, write as sgwrite, SCSIError
+from py_sg import SCSIError
 
-from .common import bytesy
+from .common import bytesy, sgread
 
 p = argparse.ArgumentParser()
+p.add_argument('-d', '--debug', action='store_true')
 p.add_argument('dev', help="Path to PL2530 USB flash drive (e.g. /dev/sda or /dev/sg0)")
 args = p.parse_args()
+
+if args.debug:
+    logging.basicConfig(level=logging.DEBUG)
 
 fd = os.open(args.dev, os.O_RDWR | os.O_NONBLOCK)
 

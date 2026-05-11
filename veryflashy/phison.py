@@ -6,9 +6,9 @@ import sys
 import logging
 
 import humanize
-from py_sg import read as sgread, write as sgwrite, SCSIError
+from py_sg import SCSIError
 
-from .common import bytesy
+from .common import bytesy, sgread
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,6 @@ args = p.parse_args()
 
 if args.debug:
     logging.basicConfig(level=logging.DEBUG)
-    logger.setLevel(level=logging.DEBUG)
 
 fd = os.open(args.dev, os.O_RDWR)
 
