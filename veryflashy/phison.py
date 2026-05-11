@@ -8,7 +8,7 @@ import logging
 import humanize
 from py_sg import read as sgread, write as sgwrite, SCSIError
 
-from common import bytesy
+from .common import bytesy
 
 logger = logging.getLogger(__name__)
 

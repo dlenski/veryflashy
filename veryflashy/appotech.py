@@ -7,7 +7,7 @@ import sys
 import humanize
 from py_sg import read as sgread, write as sgwrite, SCSIError
 
-from common import bytesy
+from .common import bytesy
 
 p = argparse.ArgumentParser()
 p.add_argument('dev', help="Path to AppoTech USB flash drive (e.g. /dev/sda or /dev/sg0)")

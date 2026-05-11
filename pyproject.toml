@@ -1,10 +1,10 @@
 [project]
-name = "phison"
+name = "veryflashy"
 version = "0.1"
 authors = [
     { name="Dan Lenski", email="dlenski@gmail.com" },
 ]
-description = "Phison USB flash drive tool"
+description = "USB flash drive identification tools"
 readme = "README.md"
 keywords = [ "USB", "NAND", "utility" ]
 classifiers = [
