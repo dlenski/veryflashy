@@ -81,4 +81,9 @@ for ii in range(16):
         flashid = '-'.join(flashid[ii:ii+1].hex() for ii in range(6))
         print(f'  Flash ID ({ii}) {flashid}')
 
+
+# Unknown mystery pages of 512 bytes, lots to explore with 96NN and faNN:
+# sgread(fd, bytesy('96 00', zpad=10), 512)
+# sgread(fd, bytesy('fa 05', zpad=8), 512)
+
 print('Done.')

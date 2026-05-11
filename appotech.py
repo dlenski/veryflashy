@@ -31,6 +31,7 @@ vi = res.decode('ascii').rstrip('\0')
 print(f'  AppoTech version info: {vi!r}')
 
 # Page 1 (?) read
+# There's a lot of other USB-related info in here
 print("Reading vendor info (SCSI command a1 01 ...):")
 try:
     res = sgread(fd, bytesy('a1 01', zpad=12), 1024)

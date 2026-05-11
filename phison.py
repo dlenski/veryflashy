@@ -92,6 +92,8 @@ res = sgread(fd, bytes.fromhex('06 56 00 00 00 00 00 00 00 00 00 00'), 512, 120_
 flashid = '-'.join(res[ii:ii+1].hex() for ii in range(6))
 print(f'  Flash ID {flashid}')
 
+# There's more stuff in 06 05 52 51 0 0 (06 05 'R' 'A')
+
 print('Done.')
 
 '''
