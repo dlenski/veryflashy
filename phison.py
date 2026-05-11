@@ -3,13 +3,23 @@
 import argparse
 import os
 import sys
+import logging
 
 import humanize
 from py_sg import read as sgread, write as sgwrite, SCSIError
 
+from common import bytesy
+
+logger = logging.getLogger(__name__)
+
 p = argparse.ArgumentParser()
+p.add_argument('-d', '--debug', action='store_true')
 p.add_argument('dev', help="Path to Phison USB flash drive (e.g. /dev/sda or /dev/sg0)")
 args = p.parse_args()
+
+if args.debug:
+    logging.basicConfig(level=logging.DEBUG)
+    logger.setLevel(level=logging.DEBUG)
 
 fd = os.open(args.dev, os.O_RDWR)
 
@@ -54,6 +64,13 @@ nblks = int.from_bytes(res[:4], 'big') + 1
 blksize = int.from_bytes(res[4:8], 'big')
 print(f'  SCSI block size {blksize} x {nblks} = {humanize.naturalsize(blksize*nblks)}')
 
+print("Reading standard SCSI block limits (SCSI command 23 ...):")
+res = sgread(fd, bytes.fromhex('23 00 00 00 00 00 00 00 00 00 00 00'), 12)
+assert res[3] == 8 and len(res) == 12
+nblks = int.from_bytes(res[4:8], 'big')
+blksize = int.from_bytes(res[10:12], 'big')
+print(f'  SCSI block size {blksize} x {nblks} = {humanize.naturalsize(blksize*nblks)}')
+
 # 'INFO' read
 # https://gist.github.com/warewolf/e19d6817f1d59939a32fbd9e1a30b9d2
 
@@ -70,10 +87,31 @@ print(f'  Phison split mode {mode}, split at {split} blocks = {split*blksize} by
 print(f'  Phison write-protect bit: {write_prot} (UNRELIABLE?)')
 
 # Flash ID read
-print("Reading flash ID (this will take up to 120 seconds:")
+print("Reading flash ID (06 56), this can take a while:")
 res = sgread(fd, bytes.fromhex('06 56 00 00 00 00 00 00 00 00 00 00'), 512, 120_000)
 flashid = '-'.join(res[ii:ii+1].hex() for ii in range(6))
 print(f'  Flash ID {flashid}')
 
 print('Done.')
 
+'''
+This doesn't work. On-drive CPU doesn't lose all power, I guess.
+
+In order to get new settings on the Phison device to "take"
+Turn off USB device power by port:
+  echo '1-3' | sudo tee /sys/bus/usb/drivers/usb/unbind (replace 1-3 with your device ID).
+Turn on:
+  echo '1-3' | sudo tee /sys/bus/usb/drivers/usb/bind.
+
+Find what USB port each SCSI generic device is associated with:
+
+$ ls -l /sys/bus/usb/devices/*/host*/target*/*:0:0:0/generic
+lrwxrwxrwx 1 root root 0 May 10 00:31 /sys/bus/usb/devices/2-1:1.0/host3/target3:0:0/3:0:0:0/generic -> scsi_generic/sg2
+lrwxrwxrwx 1 root root 0 May 10 00:31 /sys/bus/usb/devices/2-8:1.0/host2/target2:0:0/2:0:0:0/generic -> scsi_generic/sg1
+
+Find what SCSI generic device a /dev/sdX is associated with:
+$ ls -ld /sys/block/sd*/device/scsi_generic/sg*
+drwxr-xr-x 3 root root 0 May 10 00:26 /sys/block/sda/device/scsi_generic/sg0
+drwxr-xr-x 3 root root 0 May  9 21:49 /sys/block/sdb/device/scsi_generic/sg1
+
+'''
