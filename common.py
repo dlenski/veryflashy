@@ -8,6 +8,6 @@ def bytesy(*args: list[bytes | str | int], zpad: Optional[int] = None):
         elif isinstance(arg, int): b.append(arg)
         else: raise NotImplementedError
     
-    return bytes(b.ljust(zpad, b'\0'))
+    return bytes(b if zpad is None else b.ljust(zpad, b'\0'))
 
     

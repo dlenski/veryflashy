@@ -30,7 +30,7 @@ fd = os.open(args.dev, os.O_RDWR)
 
 print("Reading vendor info (SCSI command 06 05 ...):")
 try:
-    res = sgread(fd, bytes.fromhex('06 05 00 00 00 00'), 528)
+    res = sgread(fd, bytesy('06 05', zpad=6), 528)
 except SCSIError:
     p.error("SCSI error: probably not a Phison device")
 if len(res) != 528:
@@ -59,13 +59,13 @@ print(f'  Phison USB ID {usb_vid:04x}:{usb_pid:04x}')
 # Read drive capacity (standard SCSI command)
 
 print("Reading standard SCSI disk capacity (SCSI command 25 ...):")
-res = sgread(fd, bytes.fromhex('25 00 00 00 00 00 00 00 00 00 00 00 00 00'), 8)
+res = sgread(fd, bytesy('25', zpad=14), 8)
 nblks = int.from_bytes(res[:4], 'big') + 1
 blksize = int.from_bytes(res[4:8], 'big')
 print(f'  SCSI block size {blksize} x {nblks} = {humanize.naturalsize(blksize*nblks)}')
 
 print("Reading standard SCSI block limits (SCSI command 23 ...):")
-res = sgread(fd, bytes.fromhex('23 00 00 00 00 00 00 00 00 00 00 00'), 12)
+res = sgread(fd, bytesy('23', zpad=12), 12)
 assert res[3] == 8 and len(res) == 12
 nblks = int.from_bytes(res[4:8], 'big')
 blksize = int.from_bytes(res[10:12], 'big')
@@ -75,7 +75,7 @@ print(f'  SCSI block size {blksize} x {nblks} = {humanize.naturalsize(blksize*nb
 # https://gist.github.com/warewolf/e19d6817f1d59939a32fbd9e1a30b9d2
 
 print("Reading vendor info (SCSI command 06 05 49 4e 46 4f):")
-res = sgread(fd, bytes.fromhex('06 05') + b'INFO', 528)
+res = sgread(fd, bytesy('06 05', b'INFO'), 528)
 if len(res) != 528:
     p.error("INFO response was not 528 bytes")
 if res[0xc4:0xca] != b"PhIsOn":
@@ -88,7 +88,7 @@ print(f'  Phison write-protect bit: {write_prot} (UNRELIABLE?)')
 
 # Flash ID read
 print("Reading flash ID (06 56), this can take a while:")
-res = sgread(fd, bytes.fromhex('06 56 00 00 00 00 00 00 00 00 00 00'), 512, 120_000)
+res = sgread(fd, bytesy('06 56', zpad=12), 512, 120_000)
 flashid = '-'.join(res[ii:ii+1].hex() for ii in range(6))
 print(f'  Flash ID {flashid}')
 
