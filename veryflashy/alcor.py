@@ -55,8 +55,8 @@ def probe(fd: int):
     nblks_be = int.from_bytes(res[0:4], 'big')
     nblks_le = int.from_bytes(res[0x100:0x104], 'little')
     if nblks_be != nblks_le:
-        raise NotImplementedError('Command 9a response gives conflict big-endian and little-endian sizes')
-    print(f'  Alcor flash size {nblks} blocks')
+        raise NotImplementedError('Command 9a response gives conflicting big-endian and little-endian sizes')
+    print(f'  Alcor flash size {nblks_le} blocks')
 
     # Flash ID read
     print("Reading flash ID (SCSI command fa 00 ...):")

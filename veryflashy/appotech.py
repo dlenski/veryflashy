@@ -46,6 +46,6 @@ def probe(fd: int) -> None:
     if len(res) < 8:
         raise NotImplementedError("Command a5 response was not >=8 bytes")
     flashid = res[0:6]
-    print(f'  AppoTech Flash ID {flashid.hex(sep="-")}')
+    print(f'  Flash ID {flashid.hex(sep="-")}')
 
     return flashid

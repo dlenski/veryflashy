@@ -41,7 +41,7 @@ def main():
 
     print("Reading standard SCSI block limits (SCSI command 23 ...):")
     res = sgread(fd, bytesy('23', zpad=12), 12)
-    assert res[3] == 8 and len(res) == 12
+    assert res[3] >= 8 and len(res) >= 12
     nblks = int.from_bytes(res[4:8], 'big')
     blksize = int.from_bytes(res[10:12], 'big')
     print(f'  SCSI block size {blksize} x {nblks} = {humanize.naturalsize(blksize*nblks)}')
@@ -51,7 +51,7 @@ def main():
     for name, model in models.items():
         if args.model == name or args.model is None:
             try:
-                logging.info(f'Probing for {name} ...')
+                logger.info(f'Probing for {name} ...')
                 flashid = model.probe(fd)
             except NotImplementedError as exc:
                 last_exc = exc
@@ -59,7 +59,9 @@ def main():
                 break
     else:
         if args.model:
-            raise SystemExit("No match found.") from last_exc
+            raise SystemExit(f"No match found: {last_exc.args[0]}") from last_exc
+        else:
+            raise SystemExit(f"No match found.")
 
 
     if flashid:
