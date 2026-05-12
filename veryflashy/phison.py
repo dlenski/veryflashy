@@ -57,10 +57,9 @@ def probe(fd: int) -> None:
     if res[0xc4:0xca] != b"PhIsOn":
         raise NotImplementedError(f"INFO response did not contain string 'PhIsOn' at offset 0xc4")
     mode = res[0xac]
-    write_prot = res[0x131] & 1 # https://gist.github.com/warewolf/e19d6817f1d59939a32fbd9e1a30b9d2?permalink_comment_id=5829546#gistcomment-5829546
     split = int.from_bytes(res[0x1fc:0x200], 'big')
     print(f'  Phison split mode {mode}, split at {split} blocks')  # https://wikidevi.wi-cat.ru/Phison#USB_Controllers:~:text=PS2309%20%3D%20PS2251%2D09-,Mode,-Mode%203%20(No
-    print(f'  Phison write-protect bit: {write_prot} (UNRELIABLE?)')
+    print(f'  (See https://gist.github.com/warewolf/e19d6817f1d59939a32fbd9e1a30b9d2 for what this means)')
 
     # Flash ID read
     print("Reading flash ID (06 56), this can take a while:")
