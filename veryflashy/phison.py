@@ -12,7 +12,7 @@ from .common import bytesy, sgread
 
 logger = logging.getLogger(__name__)
 
-    
+
 def probe(fd: int) -> None:
     # Initial read
     # See https://gist.github.com/warewolf/e19d6817f1d59939a32fbd9e1a30b9d2,
@@ -44,7 +44,7 @@ def probe(fd: int) -> None:
     print(f'  Phison firmware version/date: {fwver}')
     print(f'  Phison f1f2: {f1f2} (NOT SURE WHAT THIS IS)')
     # https://gist.github.com/warewolf/e19d6817f1d59939a32fbd9e1a30b9d2?permalink_comment_id=5610067#gistcomment-5610067
-    usb_vid, usb_pid = int.from_bytes(res[8:10], 'little'), int.from_bytes(res[10:12], 'little') 
+    usb_vid, usb_pid = int.from_bytes(res[8:10], 'little'), int.from_bytes(res[10:12], 'little')
     print(f'  Phison USB ID {usb_vid:04x}:{usb_pid:04x}')
 
     # 'INFO' read

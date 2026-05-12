@@ -45,7 +45,7 @@ def probe(fd: int):
         raise NotImplementedError(f"Initial response did not contain string 'PQI' at offset 0xd5")
     print("Reading vendor info (SCSI command 82 51 01 ...):")
 
-    usb_vid, usb_pid = int.from_bytes(res[12:14], 'little'), int.from_bytes(res[14:16], 'little') 
+    usb_vid, usb_pid = int.from_bytes(res[12:14], 'little'), int.from_bytes(res[14:16], 'little')
     print(f'  Alcor USB ID {usb_vid:04x}:{usb_pid:04x}')
 
     print("Reading vendor info (SCSI command 9a ...):")

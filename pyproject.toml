@@ -1,10 +1,8 @@
 [project]
 name = "veryflashy"
 version = "0.1"
-authors = [
-    { name="Dan Lenski", email="dlenski@gmail.com" },
-]
-description = "USB flash drive identification tools"
+authors = [ { name="Dan Lenski", email="dlenski@gmail.com" } ]
+description = "USB flash drive inspection tool"
 readme = "README.md"
 keywords = [ "USB", "NAND", "utility" ]
 classifiers = [
@@ -29,5 +27,5 @@ dependencies = [
 build-backend = "setuptools.build_meta"
 requires = ["setuptools >= 40.9.0"]
 
-[tool.setuptools]
-py-modules = ["phison", "alcor"]
+[project.scripts]
+veryflashy = "veryflashy.__main__:main"

@@ -12,7 +12,7 @@ from .common import bytesy, sgread
 
 logger = logging.getLogger(__name__)
 
-    
+
 def probe(fd: int) -> None:
     # Found with scsifuzz
 

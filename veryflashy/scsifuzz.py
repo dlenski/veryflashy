@@ -76,7 +76,7 @@ for b1 in range(256):
             p.error(f"  Can't continue: {exc}")
         except SCSIError as exc:
             ms, hs, ds, sense, buf = exc.args
-            
+
             for ii in range(20):
                 try:
                     res = sgread(fd, b'\0\0\0\0\0\0', 0, timeout_ms=1000)   # test unit ready
@@ -93,4 +93,3 @@ for b1 in range(256):
                     if ii > 0:
                         logger.debug(f"   Test unit ready took {ii} 1-second delays to become okay again ({res.hex()}).")
                     break
-	

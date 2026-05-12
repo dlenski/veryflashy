@@ -23,7 +23,7 @@ def bytesy(*args: list[bytes | str | int], zpad: Optional[int] = 0):
         elif isinstance(arg, str): b.extend(s.encode('ascii') if len(arg) == 1 else bytes.fromhex(arg))
         elif isinstance(arg, int): b.append(arg)
         else: raise NotImplementedError
-    
+
     return bytes(b.ljust(zpad, b'\0'))
 
 
