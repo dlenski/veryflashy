@@ -12,23 +12,6 @@ from .common import bytesy, sgread
 
 logger = logging.getLogger(__name__)
 
-def main():
-    logger = logging.getLogger(__name__)
-
-    p = argparse.ArgumentParser()
-    p.add_argument('-d', '--debug', action='store_true')
-    p.add_argument('dev', help="Path to Phison USB flash drive (e.g. /dev/sda or /dev/sg0)")
-    args = p.parse_args()
-
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG)
-
-    fd = os.open(args.dev, os.O_RDWR)
-    try:
-        probe(fd)
-    except NotImplementedError as exc:
-        p.error("Probably not a Phison USB NAND Flash controller: {exc.args[0]}")
-
     
 def probe(fd: int) -> None:
     # Initial read

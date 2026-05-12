@@ -12,21 +12,6 @@ from .common import bytesy, sgread
 
 logger = logging.getLogger(__name__)
 
-def main():
-    p = argparse.ArgumentParser()
-    p.add_argument('-d', '--debug', action='store_true')
-    p.add_argument('dev', help="Path to AppoTech USB flash drive (e.g. /dev/sda or /dev/sg0)")
-    args = p.parse_args()
-
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG)
-
-    fd = os.open(args.dev, os.O_RDWR | os.O_NONBLOCK)
-    try:
-        probe(fd)
-    except NotImplementedError as exc:
-        p.error("Probably not an Appotech USB NAND Flash controller: {exc.args[0]}")
-
     
 def probe(fd: int) -> None:
     # Found with scsifuzz

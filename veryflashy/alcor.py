@@ -10,21 +10,6 @@ from py_sg import SCSIError
 
 from .common import bytesy, sgread as _sgread
 
-def main():
-    p = argparse.ArgumentParser()
-    p.add_argument('-d', '--debug', action='store_true')
-    p.add_argument('dev', help="Path to Alcor USB flash drive (e.g. /dev/sda or /dev/sg0)")
-    args = p.parse_args()
-
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG)
-
-    fd = os.open(args.dev, os.O_RDWR | os.O_NONBLOCK)
-    try:
-        probe(fd)
-    except NotImplementedError as exc:
-        p.error("Probably not a Phison USB NAND Flash controller: {exc.args[0]}")
-
 
 def sgread(fd, cmd, bufLen, timeout_ms=None, flags=0):
     '''Bad workaround for timeout issues with this device'''
