@@ -22,6 +22,9 @@ dependencies = [
 [project.license]
 "text" = "GPL-3.0-or-later"
 
+[project.urls]
+"Homepage" = "https://github.com/dlenski/veryflashy"
+
 [build-system]
 build-backend = "setuptools.build_meta"
 requires = ["setuptools >= 40.9.0"]
