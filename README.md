@@ -4,14 +4,19 @@ Extracts information about the controller chips and
 and NAND flash chips used in
 [USB flash drives](https://en.wikipedia.org/wiki/USB_flash_drive).
 
-Currently, it can identify several common brands of flash chips:
+Currently, it can interface with several common brands of USB NAND flash controller chips,
+and can extract the NAND flash chip IDs from most of them:
 
 | Manufacturer | Controller chip(s) | Flash chip ID? | Other features |
 |:--------|:-----------:|:-------------:|:------------:|
 | Phison | PS23xx | ✓ | Controller chip ID, controller firmware version, [partitioning info](https://gist.github.com/warewolf/e19d6817f1d59939a32fbd9e1a30b9d2) |
 | Alcor | AU698x | ✓ | Timeout bugs 🐛 |
 | AppoTech | DM82xx | ✓ |  |
-| ? | PL2530 | ◌ | |
+| ?[^1] | PL2530 | ◌ | |
+
+[^1]: I truly don't what company makes this flash chip, but my crude [fuzzer](#fuzzer)
+was able to extract some information from an old USB drive, including the string "PL2530" and
+the size of the flash in 512-byte blocks.
 
 ## Running it
 
