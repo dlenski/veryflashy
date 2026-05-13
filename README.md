@@ -30,7 +30,7 @@ Add the `-l` option to look up information about the identity of the
 NAND flash chip at [FlashMaster online](https://fm.itxtech.org/en):
 
 ```
-$ sudo /dev/sdb
+$ sudo veryflashy -l /dev/sdb
 Reading standard SCSI disk capacity (SCSI command 25 ...):
   SCSI block size 512 x 15663104 = 8.0 GB
 Reading standard SCSI block limits (SCSI command 23 ...):
