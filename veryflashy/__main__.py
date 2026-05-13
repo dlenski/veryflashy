@@ -41,10 +41,12 @@ def main():
 
     print("Reading standard SCSI block limits (SCSI command 23 ...):")
     res = sgread(fd, bytesy('23', zpad=12), 12)
-    assert res[3] >= 8 and len(res) >= 12
-    nblks = int.from_bytes(res[4:8], 'big')
-    blksize = int.from_bytes(res[10:12], 'big')
-    print(f'  SCSI block size {blksize} x {nblks} = {humanize.naturalsize(blksize*nblks)}')
+    if len(res) >= 12 and res[3] >= 8:
+        nblks = int.from_bytes(res[4:8], 'big')
+        blksize = int.from_bytes(res[10:12], 'big')
+        print(f'  SCSI block size {blksize} x {nblks} = {humanize.naturalsize(blksize*nblks)}')
+    else:
+        logger.warning('  Did not get valid response for SCSI block size limits.')
 
     last_exc = None
     flashid = None
