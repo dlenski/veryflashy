@@ -21,6 +21,8 @@ Currently, it can identify several common brands of flash chips:
 
 Check out this repository, then `sudo uv run veryflashy /dev/sdX` in it
 (or `uv run sudo --preserve-env=PATH python -m veryflashy /dev/sdX`).
+Add the `-l` option to look up information about the identity of the
+NAND flash chip at [FlashMaster online](https://fm.itxtech.org/en):
 
 ```
 $ sudo /dev/sdb
@@ -38,7 +40,8 @@ Reading vendor info (SCSI command 06 05 49 4e 46 4f):
   (See https://gist.github.com/warewolf/e19d6817f1d59939a32fbd9e1a30b9d2 for what this means)
 Reading flash ID (06 56), this can take a while:
   Flash ID 89-d7-d5-3e-78-00
-Done.
+NAND flash chip summary for 89d7d53e7800: Intel | 4GB MLC | 2 die | 1 planes
+More info: https://fm.itxtech.org/en/ids/89d7d53e7800
 ```
 
 ## Credits and inspiration

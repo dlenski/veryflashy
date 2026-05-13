@@ -1,2 +1,4 @@
-py_sg @ https://github.com/dlenski/py_sg/archive/main.zip
+py_sg
+hexdump
 humanize
+requests

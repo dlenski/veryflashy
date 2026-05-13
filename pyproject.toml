@@ -12,9 +12,10 @@ classifiers = [
     "Topic :: System :: Hardware",
 ]
 dependencies = [
-    "py-sg @ https://github.com/dlenski/py_sg/archive/main.zip",
+    "py-sg",
     "humanize",
     "hexdump",
+    "requests",
 ]
 
 [project.license]

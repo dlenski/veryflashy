@@ -5,17 +5,14 @@ import csv
 import os
 import logging
 from pathlib import Path
+from importlib import import_module
 
 import humanize
 
-from .common import sgread, bytesy
-from . import (
-    phison,
-    appotech,
-    alcor,
-    pl2530,
-)
-models = {n.__name__.split('.')[-1]: n for n in (phison, appotech, alcor, pl2530)}
+from .common import bytesy, sgread
+from . import fdnext
+models = {n: import_module(name='.'+n, package=__package__)
+          for n in ('phison', 'appotech', 'alcor', 'pl2530')}
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +20,7 @@ def main():
     p = argparse.ArgumentParser(description='Identifies and inspects USB NAND flash drive controllers.')
     p.add_argument('-d', '--debug', default=0, action='count')
     p.add_argument('-m', '--model', choices=models.keys(), help=f'Flash controller type, if already known (one of {", ".join(models)})')
+    p.add_argument('-l', '--lookup', action='store_true', help=f'Look up information about NAND flash chip IDs online (from {fdnext.FDNEXT_WEB_URL})')
     p.add_argument('dev', help="Path to USB flash drive (e.g. /dev/sda or /dev/sg0)")
     args = p.parse_args()
 
@@ -66,8 +64,16 @@ def main():
             raise SystemExit(f"No match found.")
 
 
-    if flashid:
-        print("Done.")
+    if flashid and args.lookup:
+        try:
+            summary = fdnext.fdnext_decode(flashid)
+        except RuntimeError as exc:
+            p.error("Error from NAND flash lookup server: {exc}")
+        except Exception as exc:
+            p.error(f"Unexpected error: {exc}")
+        else:
+            print(f'NAND flash chip summary for {flashid.hex()}: {" | ".join(summary)}')
+            print(f'More info: {fdnext.FDNEXT_WEB_URL}/{flashid.hex()}')
 
 
 if __name__ == '__main__':
