@@ -8,18 +8,20 @@ import logging
 import humanize
 from py_sg import SCSIError
 
-from .common import bytesy, sgread as _sgread
+from .common import bytesy, sgread
 
 
-def sgread(fd, cmd, bufLen, timeout_ms=None, flags=0):
-    '''Bad workaround for timeout issues with this device'''
+def _sgread(fd, cmd, bufLen, timeout_ms=None, flags=0, force_size=False):
+    '''Bad workaround for timeout issues with Alcor devices.
+
+    Runs sgread(), but then ignores timeouts (`host_status=3`) and
+    just returns the output buffer.'''
     if timeout_ms is None:
         timeout_ms = 1_000
 
     try:
-        return _sgread(fd, cmd, bufLen, timeout_ms, flags)
+        return _sgread(fd, cmd, bufLen, timeout_ms, flags, force_size)
     except SCSIError as exc:
-        #print(exc)
         ms, hs, ds, sense, buf = exc.args
         if ms == ds == 0 and sense is None and hs == 3:
             return buf
@@ -32,13 +34,28 @@ def probe(fd: int):
     # https://linuxehacking.ovh/2014/07/12/alcor-ufd-controller-reverse/
     # https://linuxehacking.ovh/2014/07/20/alcor-ufd-controller-hacking-update-2/
 
-    # Initial read
+    # Initial read:
+    #
+    # - If this is run with SCSI `dxfer_len=512`, it returns `resid=512` in
+    #   the output, indicating no data written (512-512=0). Nevertheless it
+    #   has *actually written 512 bytes* to the output buffer.
+    #   Apparently many SCSI devices are buggy in what they return in the
+    #   resid field: https://tldp.org/HOWTO/SCSI-Generic-HOWTO/x356.html
+    # - If it's run with a dxfer_len > 512, it *times out* (host_status=3)
+    #   but it does populate the output buffer.
+    # - The sane workaround is to use `force_size=True` (added in py_sg v0.17),
+    #   which causes it to ignore the `resid` field in the output, and
+    #   always return the full requested data size.
+    #
+    # Maybe I just have a weird/bad/unusual Alcor devices, but I think they
+    # all must be like this because tizbac/alcorhack also notably *ignores*
+    # the resid value here:
+    # https://github.com/tizbac/alcorhack/blame/4ac9c48c2e6aec885c9385153d86d4a6572697cc/main.cpp#L308-L320
+
     try:
-        res = sgread(fd, bytesy('82 51 01', zpad=10), 525)
+        res = sgread(fd, bytesy('82 51 01', zpad=10), 512, force_size=True)
     except SCSIError as exc:
         raise NotImplementedError("Initial command failed") from exc
-    if len(res) != 525:
-        raise NotImplementedError("Command 82 51 01 response was not 525 bytes: probably not an Alcor device")
     if res[0:2] != b"\x99\x07":
         raise NotImplementedError(f"Initial response did not contain 99 07 at offset 0")
     if res[0xd5:0xd8] != b"PQI":

@@ -12,7 +12,7 @@ classifiers = [
     "Topic :: System :: Hardware",
 ]
 dependencies = [
-    "py-sg",
+    "py-sg>=0.17",
     "humanize",
     "hexdump",
     "requests",
