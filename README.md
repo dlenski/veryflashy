@@ -10,7 +10,7 @@ and can extract the NAND flash chip IDs from most of them:
 | Manufacturer | Controller chip(s) | Flash chip ID? | Other features |
 |:--------|:-----------:|:-------------:|:------------:|
 | Phison | PS23xx | ✓ | Controller chip ID, controller firmware version, [partitioning info](https://gist.github.com/warewolf/e19d6817f1d59939a32fbd9e1a30b9d2) |
-| Alcor | AU698x | ✓ | Timeout bugs 🐛 |
+| Alcor | AU698x | ✓ | |
 | AppoTech | DM82xx | ✓ |  |
 | ?[^1] | PL2530 | ◌ | |
 
