@@ -35,8 +35,11 @@ def probe(fd: int) -> None:
         res = sgread(fd, bytesy('a1 01', zpad=12), 1024)
     except SCSIError as exc:
         raise NotImplementedError("Didn't get response to a1 01 command") from exc
-    nblks = int.from_bytes(res[8:11], 'big')
-    print(f'  AppoTech flash size {nblks} blocks')
+    nblks_be = int.from_bytes(res[8:11], 'big')
+    nblks_le = int.from_bytes(res[0x182:0x186], 'little')
+    if nblks_be != nblks_le:
+        raise NotImplementedError('Command 9a response gives conflicting big-endian and little-endian sizes')
+    print(f'  AppoTech flash size {nblks_le} blocks')
     usb_vid, usb_pid = int.from_bytes(res[0x2a:0x2c], 'little'), int.from_bytes(res[0x2c:0x2e], 'little')
     print(f'  AppoTech USB ID {usb_vid:04x}:{usb_pid:04x}')
 
