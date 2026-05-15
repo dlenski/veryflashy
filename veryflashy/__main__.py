@@ -18,10 +18,10 @@ logger = logging.getLogger(__name__)
 
 def main():
     p = argparse.ArgumentParser(description='Identifies and inspects USB NAND flash drive controllers.')
-    p.add_argument('-d', '--debug', default=0, action='count')
     p.add_argument('-m', '--model', choices=models.keys(), help=f'Flash controller type, if already known (one of {", ".join(models)})')
     p.add_argument('-l', '--lookup', action='store_true', help=f'Look up information about NAND flash chip IDs online (from {fdnext.FDNEXT_WEB_URL})')
     p.add_argument('dev', help="Path to USB flash drive (e.g. /dev/sda or /dev/sg0)")
+    p.add_argument('-d', '--debug', default=0, action='count', help='Increase debug logging verbosity (-dd will show all commands and responses sent to the device)')
     args = p.parse_args()
 
     if args.debug > 1:

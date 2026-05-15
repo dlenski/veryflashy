@@ -66,9 +66,7 @@ def probe(fd: int):
     print(f'  Alcor USB ID {usb_vid:04x}:{usb_pid:04x}')
 
     print("Reading vendor info (SCSI command 9a ...):")
-    res = sgread(fd, bytesy('9a', zpad=10), 525)
-    if len(res) != 525:
-        raise NotImplementedError("Command 9a response was not 525 bytes")
+    res = sgread(fd, bytesy('9a', zpad=10), 512, force_size=True)
     nblks_be = int.from_bytes(res[0:4], 'big')
     nblks_le = int.from_bytes(res[0x100:0x104], 'little')
     if nblks_be != nblks_le:
@@ -77,9 +75,7 @@ def probe(fd: int):
 
     # Flash ID read
     print("Reading flash ID (SCSI command fa 00 ...):")
-    res = sgread(fd, bytesy('fa 00', zpad=8), 525)
-    if len(res) != 525:
-        raise NotImplementedError("Command fa 00 response was not 525 bytes")
+    res = sgread(fd, bytesy('fa 00', zpad=8), 512, force_size=True)
 
     flashids = []
     for ii in range(16):
