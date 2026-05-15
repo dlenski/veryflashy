@@ -30,20 +30,32 @@ def bytesy(*args: list[bytes | str | int], zpad: Optional[int] = 0):
 logger = logging.getLogger()
 
 @wraps(py_sg.read)
-def sgread(fd, cmd, bufLen, timeout_ms=20_000, flags=0):
+def sgread(fd, cmd, *args, **kwargs):
     logger.debug(f"SCSI read: {cmd.hex(sep=' ')}")
     try:
-        res = py_sg.read(fd, cmd, bufLen, timeout_ms, flags)
+        buf = py_sg.read(fd, cmd, *args, **kwargs)
     except py_sg.SCSIError as exc:
         ms, hs, ds, sense, buf = exc.args
         logger.debug(f"  Got error: [masked,host,driver]_status={ms:02x},{hs:02x},{ds:02x}")
         if sense:
             logger.debug(f"             sense={sense.hex(sep=' ')}")
         if buf:
-            logger.debug(f"             buf={buf.hex(sep=' ')}")
+            logger.debug(f"  Result buffer (may be invalid):")
+            for p in (b'\0', b'\xff'):
+                sbuf = buf.rstrip(p)
+                if len(sbuf) < len(buf): break
+            for l in hexdump(sbuf, 'generator'):
+                logger.debug(l)
+            if len(sbuf) < len(buf):
+                logger.debug(f'{len(buf):08x}: {p.hex()}-padded to here')
         raise
     else:
         logger.debug(f"  Results:")
-        for l in hexdump(res, 'generator'):
+        for p in (b'\0', b'\xff'):
+            sbuf = buf.rstrip(p)
+            if len(sbuf) < len(buf): break
+        for l in hexdump(sbuf, 'generator'):
             logger.debug(l)
-        return res
+        if len(sbuf) < len(buf):
+            logger.debug(f'{len(buf):08x}: {p.hex()}-padded to here')
+        return buf
