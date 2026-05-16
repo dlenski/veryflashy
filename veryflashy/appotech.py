@@ -44,11 +44,15 @@ def probe(fd: int) -> None:
     print(f'  AppoTech USB ID {usb_vid:04x}:{usb_pid:04x}')
 
     # Flash ID read
-    print("Reading flash ID (SCSI command a5 ...):")
-    res = sgread(fd, bytesy('a5', zpad=12), 512)
-    if len(res) < 8:
-        raise NotImplementedError("Command a5 response was not >=8 bytes")
-    flashid = res[0:6]
-    print(f'  Flash ID {flashid.hex(sep="-")}')
+    print("Reading flash IDs (SCSI command a5 [0-15]...):")
 
-    return flashid
+    flashids = []
+    for ii in range(16):
+        res = sgread(fd, bytesy('a5', ii, zpad=12), 512)
+        flashid = res[:6]
+        if flashid != b'\xff'*6:
+            print(f'  Flash ID ({ii}) {flashid.hex(sep="-")}')
+            flashids.append(flashid)
+
+    if flashids:
+        return flashids[0]

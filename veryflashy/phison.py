@@ -67,6 +67,6 @@ def probe(fd: int) -> None:
     flashid = res[0:6]
     print(f'  Flash ID {flashid.hex(sep="-")}')
 
-    # There's more stuff in 06 05 52 51 0 0 (06 05 'R' 'A')
+    # There's more stuff in 06 05 52 51 0 0 (06 05 'R' 'Q')
 
     return flashid
