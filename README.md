@@ -11,7 +11,8 @@ and can extract the NAND flash chip IDs from most of them:
 |:--------|:-----------:|:-------------:|:------------:|
 | Phison | PS23xx | ✓ | Controller chip ID, controller firmware version, [partitioning info](https://gist.github.com/warewolf/e19d6817f1d59939a32fbd9e1a30b9d2) |
 | Alcor | AU698x | ✓ | |
-| AppoTech | DM82xx | ✓ |  |
+| AppoTech | DM82xx | ✓ | |
+| iCreate | i80xx | ✓ | |
 | ?[^1] | PL2530 | ◌ | |
 
 [^1]: I truly don't what company makes this flash chip, but my crude [fuzzer](#fuzzer)

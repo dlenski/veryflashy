@@ -12,7 +12,7 @@ import humanize
 from .common import bytesy, sgread
 from . import fdnext
 models = {n: import_module(name='.'+n, package=__package__)
-          for n in ('phison', 'appotech', 'alcor', 'pl2530')}
+          for n in ('phison', 'appotech', 'alcor', 'pl2530', 'icreate')}
 
 logger = logging.getLogger(__name__)
 
